@@ -15,9 +15,13 @@ module.exports = {
     checkURL: function(shortCode) {
         url.findOne({shortCode: shortCode}, function(err, data) {
             if(err) {
-                return -1;
-            } else {
+                return '-1';
+            }
+            
+            if(data) {
                 return 1;
+            } else {
+                return 0;
             }
         })
     }
