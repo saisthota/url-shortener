@@ -1,8 +1,8 @@
 # Nodejs - URL Shortener
 
-#1. Simple URL Shortener using Nodejs.
-#2. Takes in long URL, gives short URL.
-#3. Can make calls to the service using an API key.
+1. Simple URL Shortener using Nodejs.
+2. Takes in long URL, gives short URL.
+3. Can make calls to the service using an API key.
 
 Sample Request:
 ```
