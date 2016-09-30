@@ -7,4 +7,4 @@ var URLSchema = new Schema({
     added_on: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('URLModel', URLSchema);
+module.exports = mongoose.model('URLCollection', URLSchema);
