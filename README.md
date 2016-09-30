@@ -7,6 +7,7 @@
 Sample Request:
 ```
 URL: http://localhost:8080/api/add
+Type: POST
 Content-Type: application/x-www-form-urlencoded
 Body:
 url: 'your-long-url-here.com'
