@@ -29,9 +29,15 @@ router.use(function(req, res, next) {
     next();
 });
 
+router.get('/', function(req, res, next) {
+    res.status(200).json({'stutus': 'OK'});
+});
+
 router.get('/:shortcode', function(req, res, next) {
     var shortCode = req.params.shortcode;
+    console.log(lib.checkURL(shortCode));
 
+    if(lib.checkURL(shortCode) == 1) {
         url.findOne({shortCode: shortCode}, function (err, data) {
             if (err) {
                 res.status(500).json({'Error': 'Unknown Error'});
@@ -39,6 +45,10 @@ router.get('/:shortcode', function(req, res, next) {
                 res.redirect(data.url);
             }
         })
+    } else {
+        console.log("Not found!");
+        res.redirect('http://localhost:'+port)
+    }
 });
 
 router.post('/api/add', function(req, res, next) {
