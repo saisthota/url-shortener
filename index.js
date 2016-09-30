@@ -1,12 +1,10 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var functions = require('./functions');
 
-mongoose.connect('mongodb://localhost:27017/urlShortener');
-
+var db = require('./db');
 var url = require('./models/urls.js');
+var lib = require('./functions');
 
 //BodyParser Config
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -37,17 +35,39 @@ router.get('/', function(req, res, next) {
 
 router.post('/add', function(req, res, next) {
     var payload = req.body;
-    var requrl = payload.url;
+    var reqURL = payload.url;
+    var shortCode = lib.generateURL();
 
-    var newURL = new url({shortCode: 'abc1427', url: 'http://saisthota.com'});
+    var saveURL = function() {
 
-    newURL.save(function(err){
-        if(err) {
-            console.log(err);
+        if (lib.checkURL(shortCode) != -1) {
+
+            console.log("Available");
+            var newDocument = new url({shortCode: shortCode, url: reqURL});
+
+            newDocument.save(function (err) {
+                if (err) {
+                    res.status(500).json({'Error': 'Unknown Error'});
+                }
+                else {
+
+                    var responseData = {
+                        url: reqURL,
+                        shortURL: 'http://localhost:' + port + '/' + shortCode
+                    };
+
+                    res.status(200).json(responseData);
+                }
+            })
         } else {
-            res.json(newURL);
+            console.log("Not Available; Rechecking");
+            saveURL();
         }
-    })
+    }
+
+    saveURL();
+
+
 })
 
 app.listen(port);
