@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 //Router
 var router = express.Router();
-app.use('/api', router);
+app.use('/', router);
 
 //Launch Port
 var port = process.env.PORT || 8080;
@@ -29,20 +29,27 @@ router.use(function(req, res, next) {
     next();
 });
 
-router.get('/', function(req, res, next) {
-    res.json({ message: 'Hello' });
+router.get('/:shortcode', function(req, res, next) {
+    var shortCode = req.params.shortcode;
+
+        url.findOne({shortCode: shortCode}, function (err, data) {
+            if (err) {
+                res.status(500).json({'Error': 'Unknown Error'});
+            } else {
+                res.redirect(data.url);
+            }
+        })
 });
 
-router.post('/add', function(req, res, next) {
+router.post('/api/add', function(req, res, next) {
     var payload = req.body;
     var reqURL = payload.url;
     var shortCode = lib.generateURL();
 
     var saveURL = function() {
 
-        if (lib.checkURL(shortCode) != -1) {
+        if (lib.checkURL(shortCode) != 0) {
 
-            console.log("Available");
             var newDocument = new url({shortCode: shortCode, url: reqURL});
 
             newDocument.save(function (err) {
@@ -60,14 +67,13 @@ router.post('/add', function(req, res, next) {
                 }
             })
         } else {
-            console.log("Not Available; Rechecking");
             saveURL();
         }
     }
 
     saveURL();
+});
 
 
-})
 
 app.listen(port);
