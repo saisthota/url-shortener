@@ -95,14 +95,13 @@ router.post('/api/register', function(req, res, next) {
 
     var newClient = new client({appName: appName, contactName: contactName, email: email});
 
-    newClient.save(function(err) {
+    newClient.save(function(err, data) {
         if(err) {
             res.status(500).json({'Error': 'Unknown Error'});
         }
         else {
-            console.log(OID(_id));
             var responseData = {
-                APIKEY: 'test'
+                APIKEY: OID(data._id)
             };
             res.status(200).json(responseData);
         }
