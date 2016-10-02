@@ -6,7 +6,7 @@ var db = require('./db');
 var url = require('./models/urls.js');
 var client = require('./models/clients.js');
 var lib = require('./functions');
-var OID = db.Types.ObjectId
+var OID = db.Types.ObjectId;
 
 //BodyParser Config
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -37,49 +37,53 @@ router.get('/', function(req, res, next) {
 
 router.get('/:shortcode', function(req, res, next) {
     var shortCode = req.params.shortcode;
-    console.log(lib.checkURL(shortCode));
 
-    if(lib.checkURL(shortCode) == 1) {
-        url.findOne({shortCode: shortCode}, function (err, data) {
-            if (err) {
-                res.status(500).json({'Error': 'Unknown Error'});
-            } else {
-                res.redirect(data.url);
-            }
-        })
-    } else {
-        console.log("Not found!");
-        res.redirect('http://localhost:'+port)
-    }
+        if(lib.checkURL(shortCode) == 1) {
+            url.findOne({shortCode: shortCode}, function (err, data) {
+                if (err) {
+                    res.status(500).json({'Error': 'Unknown Error'});
+                } else {
+                    res.redirect(data.url);
+                }
+            })
+        } else {
+            console.log("Not found!");
+            res.redirect('http://localhost:'+port)
+        }
 });
 
 router.post('/api/add', function(req, res, next) {
     var payload = req.body;
     var reqURL = payload.url;
     var shortCode = lib.generateURL();
+    var API = req.params.key;
+    if(API != "") {
+        if(lib.checkAPI(API) == 1) {
+            
+            var saveURL = function () {
 
-    var saveURL = function() {
+                if (lib.checkURL(shortCode) != 0) {
 
-        if (lib.checkURL(shortCode) != 0) {
+                    var newDocument = new url({shortCode: shortCode, url: reqURL});
 
-            var newDocument = new url({shortCode: shortCode, url: reqURL});
+                    newDocument.save(function (err) {
+                        if (err) {
+                            res.status(500).json({'Error': 'Unknown Error'});
+                        }
+                        else {
 
-            newDocument.save(function (err) {
-                if (err) {
-                    res.status(500).json({'Error': 'Unknown Error'});
+                            var responseData = {
+                                url: reqURL,
+                                shortURL: 'http://localhost:' + port + '/' + shortCode
+                            };
+
+                            res.status(200).json(responseData);
+                        }
+                    })
+                } else {
+                    saveURL();
                 }
-                else {
-
-                    var responseData = {
-                        url: reqURL,
-                        shortURL: 'http://localhost:' + port + '/' + shortCode
-                    };
-
-                    res.status(200).json(responseData);
-                }
-            })
-        } else {
-            saveURL();
+            }
         }
     }
 
@@ -88,7 +92,7 @@ router.post('/api/add', function(req, res, next) {
 
 router.post('/api/register', function(req, res, next) {
     var payload = req.body;
-
+    //Add validation
     var appName = payload.appName;
     var contactName = payload.contactName;
     var email = payload.email;
@@ -101,7 +105,7 @@ router.post('/api/register', function(req, res, next) {
         }
         else {
             var responseData = {
-                APIKEY: OID(data._id)
+                API_KEY: OID(data._id)
             };
             res.status(200).json(responseData);
         }
