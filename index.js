@@ -4,7 +4,9 @@ var bodyParser = require('body-parser');
 
 var db = require('./db');
 var url = require('./models/urls.js');
+var client = require('./models/clients.js');
 var lib = require('./functions');
+var OID = db.Types.ObjectId
 
 //BodyParser Config
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -84,6 +86,29 @@ router.post('/api/add', function(req, res, next) {
     saveURL();
 });
 
+router.post('/api/register', function(req, res, next) {
+    var payload = req.body;
+
+    var appName = payload.appName;
+    var contactName = payload.contactName;
+    var email = payload.email;
+
+    var newClient = new client({appName: appName, contactName: contactName, email: email});
+
+    newClient.save(function(err) {
+        if(err) {
+            res.status(500).json({'Error': 'Unknown Error'});
+        }
+        else {
+            console.log(OID(_id));
+            var responseData = {
+                APIKEY: 'test'
+            };
+            res.status(200).json(responseData);
+        }
+    })
+
+})
 
 
 app.listen(port);
