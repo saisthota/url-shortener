@@ -59,7 +59,7 @@ router.post('/api/add', function(req, res, next) {
     var API = req.params.key;
     if(API != "") {
         if(lib.checkAPI(API) == 1) {
-            
+
             var saveURL = function () {
 
                 if (lib.checkURL(shortCode) != 0) {
@@ -112,6 +112,5 @@ router.post('/api/register', function(req, res, next) {
     })
 
 })
-
 
 app.listen(port);
